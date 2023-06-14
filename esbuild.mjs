@@ -58,14 +58,14 @@ const buildFrontends = async function (frontends, dir) {
         let newOptions = Object.assign({}, options);
         newOptions.format = 'esm'
         newOptions.entryPoints = [
-            { in: path.join(dir, item.name, "src/index.ts"), out: path.resolve(options.outdir, "js", item.name) },
-            { in: path.join(dir, item.name, "src/assets/scss/style.scss"), out: path.resolve(options.outdir, "css", item.name) }
+            { in: path.join(dir, item.name, "index.ts"), out: path.resolve(options.outdir, "js", item.name) },
+            { in: path.join(dir, item.name, "assets/scss/style.scss"), out: path.resolve(options.outdir, "css", item.name) }
         ]
         newOptions.plugins[1] = {
             name: "assets-fonts",
             setup(build) {
                 build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
-                    return { path: path.join(dir, item.name, "src/assets", args.path) }
+                    return { path: path.join(dir, item.name, "assets", args.path) }
                 })
             }
         }
@@ -75,7 +75,7 @@ const buildFrontends = async function (frontends, dir) {
             setup(build) {
                 build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
                     args.path = args.path.replace("@", "")
-                    return { path: path.join(dir, item.name, "src/assets", args.path) }
+                    return { path: path.join(dir, item.name, "assets", args.path) }
                 })
             }
         }
