@@ -58,7 +58,7 @@ const buildFrontends = async function (frontends, dir) {
         let newOptions = Object.assign({}, options);
         newOptions.format = 'esm'
         newOptions.entryPoints = [
-            { in: path.join(dir, item.name, "index.ts"), out: path.resolve(options.outdir, "js", item.name) },
+            { in: path.join(dir, item.name, "src/index.ts"), out: path.resolve(options.outdir, "js", item.name) },
             { in: path.join(dir, item.name, "assets/scss/style.scss"), out: path.resolve(options.outdir, "css", item.name) }
         ]
         newOptions.plugins[1] = {
