@@ -35,6 +35,9 @@ const options = {
 }
 
 const checkFrontend = async function (dir) {
+    if (!fs.existsSync(dir)) {
+        return []
+    }
     const frontends = fs.readdirSync(dir).map(file => {
         if (file[0] != ".") {
             let microFrontend = {
