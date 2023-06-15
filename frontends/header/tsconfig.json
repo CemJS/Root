@@ -8,8 +8,5 @@
         "esModuleInterop": true,
         "moduleResolution": "node",
         "baseUrl": "."
-    },
-    "include": [
-        "global.d.ts"
-    ]
+    }
 }
