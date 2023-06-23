@@ -6,16 +6,40 @@ import path from 'path'
 import fs from 'fs'
 
 const runServe = process.argv.includes("--runServe")
-
-
-
 const dirFrontends = path.resolve("frontends")
 const dirServices = path.resolve("services")
 let cemconfig = JSON.parse(fs.readFileSync("cemconfig.json"))
 
+const checkFrontend = async function (dir) {
+    if (!fs.existsSync(dir)) {
+        return [[], []]
+    }
+    const entryPoints = []
+    const frontends = fs.readdirSync(dir).map(file => {
+        if (file[0] != ".") {
+            let microFrontend = {
+                name: file,
+                path: {},
+
+            }
+            if (fs.existsSync(path.join(dir, file, "index.ts"))) {
+                microFrontend.path.js = `/assets/js/${file}.js`
+                entryPoints.push({ in: path.join(dir, file, "index.ts"), out: path.resolve(options.outdir, "js", file) })
+            }
+            if (fs.existsSync(path.resolve(`assets/scss/${file}.scss`))) {
+                microFrontend.path.css = `/assets/css/${file}.css`
+                entryPoints.push({ in: path.resolve(`assets/scss/${file}.scss`), out: path.resolve(options.outdir, "css", file) })
+            }
+            return microFrontend
+        }
+    }).filter(item => item);
+    return [frontends, entryPoints]
+}
+
 const options = {
     publicPath: "/assets",
     outdir: "public/assets/",
+    entryPoints: [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/root.scss", out: "css/root" }],
     bundle: true,
     loader: {
         '.woff': 'file',
@@ -33,61 +57,25 @@ const options = {
                 const { css } = await postcss([autoprefixer]).process(source, { from: undefined });
                 return css;
             },
-        })
-    ],
-}
-
-const checkFrontend = async function (dir) {
-    if (!fs.existsSync(dir)) {
-        return []
-    }
-    const frontends = fs.readdirSync(dir).map(file => {
-        if (file[0] != ".") {
-            let microFrontend = {
-                name: file,
-                path: {
-                    js: `/assets/js/${file}.js`,
-                    css: `/assets/css/${file}.css`
-                }
-            }
-            return microFrontend
-        }
-    }).filter(item => item);
-    return frontends
-}
-
-const buildFrontends = async function (frontends, dir) {
-    for (let item of frontends) {
-        let newOptions = Object.assign({}, options);
-        newOptions.format = 'esm'
-        newOptions.entryPoints = [
-            { in: path.join(dir, item.name, "src/index.ts"), out: path.resolve(options.outdir, "js", item.name) },
-            { in: path.join(dir, item.name, "assets/scss/style.scss"), out: path.resolve(options.outdir, "css", item.name) }
-        ]
-        newOptions.plugins[1] = {
+        }),
+        {
             name: "assets-fonts",
             setup(build) {
                 build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
-                    return { path: path.join(dir, item.name, "assets", args.path) }
+                    return { path: path.resolve("assets", args.path) }
                 })
             }
-        }
-
-        newOptions.plugins[2] = {
+        },
+        {
             name: "assets-images",
             setup(build) {
                 build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
                     args.path = args.path.replace("@", "")
-                    return { path: path.join(dir, item.name, "assets", args.path) }
+                    return { path: path.resolve("assets", args.path) }
                 })
             }
         }
-
-        const ctx = await esbuild.context(newOptions).catch(() => process.exit(1))
-        console.log(`⚡ Build complete! (${item.name}) ⚡`)
-        await ctx.watch()
-    }
-    return
+    ],
 }
 
 if (runServe && process.argv[3]) {
@@ -131,44 +119,30 @@ if (runServe && process.argv[3]) {
 
 } else {
 
-    const microFrontends = await checkFrontend(dirFrontends)
-    await buildFrontends(microFrontends, dirFrontends)
-
+    const [microFrontends, entryPoints] = await checkFrontend(dirFrontends)
     cemconfig.microFrontends = microFrontends
     fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
+    options.format = 'esm'
 
-    options.entryPoints = [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/root.scss", out: "css/root" }]
-    delete options.format
+    const ctxRoot = await esbuild.context(options)
+    console.log("⚡ Build complete! ⚡")
 
-    options.plugins[1] = {
-        name: "assets-fonts",
-        setup(build) {
-            build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
-                return { path: path.resolve("assets", args.path) }
-            })
+    if (microFrontends?.length) {
+        options.format = 'esm'
+        options.entryPoints = entryPoints
+        const ctx = await esbuild.context(options).catch(() => process.exit(1))
+        console.log(`⚡ Build frontends complete! ⚡`)
+        if (runServe) {
+            const serve = await ctx.serve({ servedir: "public" })
+            console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+            await ctx.watch()
+            await ctxRoot.watch()
         }
-    }
-
-    options.plugins[2] = {
-        name: "assets-images",
-        setup(build) {
-            build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
-                args.path = args.path.replace("@", "")
-                return { path: path.resolve("assets", args.path) }
-            })
-        }
-    }
-
-    if (runServe) {
-        const ctx = await esbuild.context(options)
-        console.log("⚡ Build complete! ⚡")
-        const serve = await ctx.serve({ servedir: "public" })
-        console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
-        await ctx.watch()
     } else {
-        esbuild
-            .build(options)
-            .then(() => console.log("⚡ Build complete! ⚡"))
-            .catch(() => process.exit(1))
+        if (runServe) {
+            const serve = await ctxRoot.serve({ servedir: "public" })
+            console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+            await ctxRoot.watch()
+        }
     }
 }
