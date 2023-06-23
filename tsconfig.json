@@ -4,7 +4,6 @@
         "jsxFactory": "Cemjsx",
         "jsxFragmentFactory": "CemjsxFragment",
         "module": "ES2022",
-        "target": "ES2022",
         "esModuleInterop": true,
         "moduleResolution": "node",
         "baseUrl": ".",
@@ -24,8 +23,6 @@
         },
     },
     "include": [
-        "global.d.ts",
-        "./src/**/*",
-        "./frontends/src/**/*"
+        "global.d.ts"
     ]
 }
