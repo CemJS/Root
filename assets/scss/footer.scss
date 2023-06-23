@@ -1,11 +1,8 @@
-//App
-
-body {
-    margin: 0;
-}
+@import 'utils/variables.scss';
 
 #app {
     height: 100vh;
     background-image: url('images/background/back.jpg');
     width: 100%;
+    color: red;
 }

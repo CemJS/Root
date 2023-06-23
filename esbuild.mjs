@@ -100,8 +100,8 @@ if (runServe && process.argv[3]) {
         newOptions.outdir = path.join(dirmicro, "public/assets/")
         // newOptions.format = 'esm'
         newOptions.entryPoints = [
-            { in: path.join(dirmicro, "app.ts"), out: path.resolve(newOptions.outdir, "js", name) },
-            { in: path.join(dirmicro, "assets/scss/style.scss"), out: path.resolve(newOptions.outdir, "css", name) }
+            { in: path.join(dirmicro, "app.ts"), out: path.resolve(newOptions.outdir, "js", "out") },
+            { in: path.join(dirmicro, "assets/scss/style.scss"), out: path.resolve(newOptions.outdir, "css", "out") }
         ]
         newOptions.plugins[1] = {
             name: "assets-fonts",
@@ -137,7 +137,7 @@ if (runServe && process.argv[3]) {
     cemconfig.microFrontends = microFrontends
     fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
 
-    options.entryPoints = [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/style.scss", out: "css/root" }]
+    options.entryPoints = [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/root.scss", out: "css/root" }]
     delete options.format
 
     options.plugins[1] = {

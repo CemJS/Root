@@ -24,6 +24,8 @@
         },
     },
     "include": [
-        "global.d.ts"
+        "global.d.ts",
+        "./src/**/*",
+        "./frontends/src/**/*"
     ]
 }
