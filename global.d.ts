@@ -17,3 +17,9 @@ declare module "*.jpeg" {
     const content: String;
     export default content;
 }
+
+declare interface Micro {
+    name: String,
+    loader: Function,
+    display: Function
+}

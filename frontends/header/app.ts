@@ -1,4 +1,4 @@
-import { load } from "cemjs-core";
+import { load } from "cemjs-all";
 import { micro } from "./src";
 
 load(micro)
