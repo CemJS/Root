@@ -6,6 +6,9 @@ import path from 'path'
 import fs from 'fs'
 
 const runServe = process.argv.includes("--runServe")
+
+
+
 const dirFrontends = path.resolve("frontends")
 const dirServices = path.resolve("services")
 let cemconfig = JSON.parse(fs.readFileSync("cemconfig.json"))
@@ -87,43 +90,85 @@ const buildFrontends = async function (frontends, dir) {
     return
 }
 
-const microFrontends = await checkFrontend(dirFrontends)
-await buildFrontends(microFrontends, dirFrontends)
+if (runServe && process.argv[3]) {
+    let dirmicro = path.resolve("frontends", process.argv[3])
+    if (!fs.existsSync(dirmicro)) {
+        console.error(`Not found microfrontend whith name => ${process.argv[3]}`)
+    } else {
+        let name = process.argv[3]
+        let newOptions = Object.assign({}, options);
+        newOptions.outdir = path.join(dirmicro, "public/assets/")
+        // newOptions.format = 'esm'
+        newOptions.entryPoints = [
+            { in: path.join(dirmicro, "app.ts"), out: path.resolve(newOptions.outdir, "js", name) },
+            { in: path.join(dirmicro, "assets/scss/style.scss"), out: path.resolve(newOptions.outdir, "css", name) }
+        ]
+        newOptions.plugins[1] = {
+            name: "assets-fonts",
+            setup(build) {
+                build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
+                    return { path: path.join(dirmicro, "assets", args.path) }
+                })
+            }
+        }
 
-cemconfig.microFrontends = microFrontends
-fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
+        newOptions.plugins[2] = {
+            name: "assets-images",
+            setup(build) {
+                build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
+                    args.path = args.path.replace("@", "")
+                    return { path: path.join(dirmicro, "assets", args.path) }
+                })
+            }
+        }
 
-options.entryPoints = [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/style.scss", out: "css/root" }]
-delete options.format
-
-options.plugins[1] = {
-    name: "assets-fonts",
-    setup(build) {
-        build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
-            return { path: path.resolve("assets", args.path) }
-        })
+        const ctx = await esbuild.context(newOptions).catch(() => process.exit(1))
+        console.log(`⚡ Build complete! (${name}) ⚡`)
+        const serve = await ctx.serve({ servedir: path.join(dirmicro, "public") })
+        console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+        await ctx.watch()
     }
-}
 
-options.plugins[2] = {
-    name: "assets-images",
-    setup(build) {
-        build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
-            args.path = args.path.replace("@", "")
-            return { path: path.resolve("assets", args.path) }
-        })
-    }
-}
-
-if (runServe) {
-    const ctx = await esbuild.context(options)
-    console.log("⚡ Build complete! ⚡")
-    const serve = await ctx.serve({ servedir: "public" })
-    console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
-    await ctx.watch()
 } else {
-    esbuild
-        .build(options)
-        .then(() => console.log("⚡ Build complete! ⚡"))
-        .catch(() => process.exit(1))
+
+    const microFrontends = await checkFrontend(dirFrontends)
+    await buildFrontends(microFrontends, dirFrontends)
+
+    cemconfig.microFrontends = microFrontends
+    fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
+
+    options.entryPoints = [{ in: "app.ts", out: "js/root" }, { in: "assets/scss/style.scss", out: "css/root" }]
+    delete options.format
+
+    options.plugins[1] = {
+        name: "assets-fonts",
+        setup(build) {
+            build.onResolve({ filter: /.(woff|woff2|eot|ttf)$/ }, (args) => {
+                return { path: path.resolve("assets", args.path) }
+            })
+        }
+    }
+
+    options.plugins[2] = {
+        name: "assets-images",
+        setup(build) {
+            build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
+                args.path = args.path.replace("@", "")
+                return { path: path.resolve("assets", args.path) }
+            })
+        }
+    }
+
+    if (runServe) {
+        const ctx = await esbuild.context(options)
+        console.log("⚡ Build complete! ⚡")
+        const serve = await ctx.serve({ servedir: "public" })
+        console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+        await ctx.watch()
+    } else {
+        esbuild
+            .build(options)
+            .then(() => console.log("⚡ Build complete! ⚡"))
+            .catch(() => process.exit(1))
+    }
 }
