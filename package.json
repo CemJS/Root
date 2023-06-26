@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "build": "node esbuild.mjs",
-    "start": "node esbuild.mjs --runServe"
+    "start": "node esbuild.mjs --runServe",
+    "front": "node esbuild.mjs --runServe --runFront"
   },
   "dependencies": {
     "cemjs-all": "^1.0.1",
