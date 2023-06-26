@@ -1,4 +1,5 @@
 import esbuild from "esbuild";
+import http from 'http'
 import { sassPlugin } from "esbuild-sass-plugin";
 import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
@@ -106,7 +107,33 @@ const start = async function () {
     console.log("⚡ Build complete! ⚡")
     if (runServe) {
         const serve = await ctx.serve({ servedir: "public" })
-        console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+        // console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
+        console.log(`\nWeb: http://127.0.0.1:3000`)
+        http.createServer((req, res) => {
+
+            if (req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
+                req.url = "/"
+            }
+
+            const options = {
+                hostname: serve.host,
+                port: serve.port,
+                path: req.url,
+                method: req.method,
+                headers: req.headers,
+            }
+
+            const proxyReq = http.request(options, proxyRes => {
+                if (proxyRes.statusCode === 404) {
+                    res.writeHead(404, { 'Content-Type': 'text/html' })
+                    res.end('<h1>A custom 404 page</h1>')
+                    return
+                }
+                res.writeHead(proxyRes.statusCode, proxyRes.headers)
+                proxyRes.pipe(res, { end: true })
+            })
+            req.pipe(proxyReq, { end: true })
+        }).listen(cemconfig.port)
         await ctx.watch()
     }
     return

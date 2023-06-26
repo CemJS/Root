@@ -19,18 +19,12 @@ export const display = function () {
                     <ul class="header_menu">
                         <li
                             class={["header_menu_item", this.Static.page == "cemjs" ? "header_menu_item-active" : null]}
-                            onclick={() => {
-                                this.Static.page = "cemjs"
-                                this.init();
-                            }}
-                        >Cem JS</li>
+
+                        ><a href="/about/" onclick={this.Fn.linkOut}>Cem JS</a>
+                        </li>
                         <li
                             class={["header_menu_item", this.Static.page == "examples" ? "header_menu_item-active" : null]}
-                            onclick={() => {
-                                this.Static.page = "examples"
-                                this.init();
-                            }}
-                        >Examples</li>
+                        ><a href="https://ya.ru" onclick={this.Fn.linkOut}>Examples</a></li>
                         <li
                             class={["header_menu_item", this.Static.page == "contacts" ? "header_menu_item-active" : null]}
                             onclick={() => {
