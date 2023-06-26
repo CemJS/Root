@@ -6,14 +6,17 @@ export const display = function () {
         <header class="header header_container">
             <div class="header_inner">
                 <div class="header_logo">
-                    <img
-                        class="header_logo-img"
-                        src={logo}
-                        onclick={() => {
-                            this.Static.page = "home"
-                            this.init();
-                        }}
-                    ></img>
+                    <a href="/" onclick={this.Fn.linkOut}>
+                        <img
+                            class="header_logo-img"
+                            src={logo}
+                            onclick={() => {
+                                this.Static.page = "home"
+                                this.init();
+                            }}
+                        ></img>
+                    </a>
+
                 </div>
                 <nav>
                     <ul class="header_menu">
