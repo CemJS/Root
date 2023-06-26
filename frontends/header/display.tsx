@@ -6,28 +6,23 @@ export const display = function () {
         <header class="header header_container">
             <div class="header_inner">
                 <div class="header_logo">
-                    <a href="/" onclick={this.Fn.linkOut}>
+                    <a href="/" onclick={this.Fn.link}>
                         <img
                             class="header_logo-img"
                             src={logo}
-                            onclick={() => {
-                                this.Static.page = "home"
-                                this.init();
-                            }}
                         ></img>
                     </a>
-
                 </div>
                 <nav>
                     <ul class="header_menu">
                         <li
                             class={["header_menu_item", this.Static.page == "cemjs" ? "header_menu_item-active" : null]}
 
-                        ><a href="/about/" onclick={this.Fn.linkOut}>Cem JS</a>
+                        ><a href="/about/" onclick={this.Fn.link}>Cem JS</a>
                         </li>
                         <li
                             class={["header_menu_item", this.Static.page == "examples" ? "header_menu_item-active" : null]}
-                        ><a href="https://ya.ru" onclick={this.Fn.linkOut}>Examples</a></li>
+                        ><a href="https://ya.ru" onclick={this.Fn.link}>Examples</a></li>
                         <li
                             class={["header_menu_item", this.Static.page == "contacts" ? "header_menu_item-active" : null]}
                             onclick={() => {
