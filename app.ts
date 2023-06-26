@@ -1,3 +1,6 @@
-import { initMap } from 'cemjs-core'
+import { initMap } from 'cemjs-all'
 import cemconfig from './cemconfig.json'
-initMap(cemconfig)
+
+export default function () {
+    initMap(cemconfig)
+}
