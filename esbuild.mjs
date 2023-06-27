@@ -60,30 +60,29 @@ const checkFrontend = async function (dir, name) {
     if (!fs.existsSync(dir)) {
         return []
     }
-    const frontends = fs.readdirSync(dir).map(file => {
+    const frontends = {}
+    fs.readdirSync(dir).map(file => {
         if (file[0] != "." && (!name || name == file)) {
-            let microFrontend = {
+            frontends[file] = {
                 front: true,
                 name: file,
                 path: {},
 
             }
             if (fs.existsSync(path.join(dir, file, "index.ts"))) {
-                microFrontend.path.js = `/assets/js/${file}.js`
+                frontends[file].path.js = `/assets/js/${file}.js`
                 options.entryPoints.push({ in: path.join(dir, file, "index.ts"), out: path.resolve(options.outdir, "js", file) })
             }
             if (fs.existsSync(path.resolve(`assets/scss/${file}.scss`))) {
-                microFrontend.path.css = `/assets/css/${file}.css`
+                frontends[file].path.css = `/assets/css/${file}.css`
                 options.entryPoints.push({ in: path.resolve(`assets/scss/${file}.scss`), out: path.resolve(options.outdir, "css", file) })
             }
             if (fs.existsSync(path.join(dir, file, "cemconfig.json"))) {
                 let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemconfig.json")))
-                Object.assign(microFrontend, cemconfig)
+                Object.assign(frontends[file], cemconfig)
             }
-
-            return microFrontend
         }
-    }).filter(item => item);
+    });
     return frontends
 }
 
