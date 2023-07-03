@@ -106,9 +106,9 @@ const start = async function () {
     if (runServe) {
         const serve = await ctx.serve({ servedir: "public" })
         console.log(`\nWeb: http://127.0.0.1:${cemconfig.port}`)
+
+
         http.createServer((req, res) => {
-
-
 
             const options = {
                 hostname: serve.host,
@@ -118,24 +118,34 @@ const start = async function () {
                 headers: req.headers,
             }
 
-            if (req.url.startsWith("/events")) {
-                options.port = 6445
-
-            } else if (req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
+        cemconfig.hook?.proxyWeb.map((item) => {
+            if (req.url.startsWith(item.url)) {
+                options.port = item.port
+                options.hostname = item.host
+            }
+        })
+        
+            if (req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
                 options.path = "/"
             }
 
-            // console.log('=ee4a9a=', options)
-            const proxyReq = http.request(options, proxyRes => {
-                if (proxyRes.statusCode === 404) {
-                    res.writeHead(404, { 'Content-Type': 'text/html' })
-                    res.end('<h1>A custom 404 page</h1>')
-                    return
-                }
-                res.writeHead(proxyRes.statusCode, proxyRes.headers)
-                proxyRes.pipe(res, { end: true })
-            })
-            req.pipe(proxyReq, { end: true })
+                const proxyReq = http.request(options, proxyRes => {
+                    if (proxyRes.statusCode === 404) {
+                        res.writeHead(404, { 'Content-Type': 'text/html' })
+                        res.end('<h1>A custom 404 page</h1>')
+                        return
+                    }
+                    res.writeHead(proxyRes.statusCode, proxyRes.headers)
+                    proxyRes.pipe(res, { end: true })
+                })
+
+                proxyReq.on('error', function(err) {
+                  console.log('=1e96c7=',err)
+                });
+
+                req.pipe(proxyReq, { end: true })
+           
+            
         }).listen(cemconfig.port)
         await ctx.watch()
     }
