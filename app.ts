@@ -1,6 +1,7 @@
 import { initMap } from 'cemjs-all'
 import cemconfig from './cemconfig.json'
+import microFrontends from './microFrontends.json'
 
 export default function () {
-    initMap(cemconfig)
+    initMap(Object.assign(cemconfig, microFrontends))
 }

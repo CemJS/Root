@@ -99,8 +99,9 @@ const start = async function () {
     }
 
     const microFrontends = await checkFrontend(dirFrontends, nameFront);
-    cemconfig.microFrontends = microFrontends
-    fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
+    // cemconfig.microFrontends = microFrontends
+    fs.writeFileSync('microFrontends.json', JSON.stringify(microFrontends));
+    // fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
 
     const ctx = await esbuild.context(options).catch(() => process.exit(1))
     console.log("⚡ Build complete! ⚡")
