@@ -118,14 +118,17 @@ const start = async function () {
                 headers: req.headers,
             }
 
+        let haveChange = false
+
         cemconfig.hook?.proxyWeb.map((item) => {
             if (req.url.startsWith(item.url)) {
                 options.port = item.port
                 options.hostname = item.host
+                haveChange = true
             }
         })
         
-            if (req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
+            if (!haveChange && req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
                 options.path = "/"
             }
 

@@ -21,9 +21,14 @@
   "hook": {
     "proxyWeb": [
       {
-        "url": "/api/wqe/",
+        "url": "/api/events",
         "host": "127.0.0.1",
-        "port": "1344"
+        "port": "6445"
+      },
+      {
+        "url": "/status",
+        "host": "127.0.0.1",
+        "port": "6445"
       }
     ]
   },
