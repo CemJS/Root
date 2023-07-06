@@ -27,6 +27,7 @@ const options = {
         '.jpg': 'file',
         '.jpeg': 'file',
         '.png': 'file',
+        '.gif': 'file',
         '.svg': 'dataurl',
     },
     plugins: [
@@ -47,7 +48,7 @@ const options = {
         {
             name: "assets-images",
             setup(build) {
-                build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
+                build.onResolve({ filter: /.(jpg|jpeg|png|svg|gif)$/ }, (args) => {
                     args.path = args.path.replace("@", "")
                     return { path: path.resolve("assets", args.path) }
                 })
@@ -118,37 +119,40 @@ const start = async function () {
                 headers: req.headers,
             }
 
-        let haveChange = false
+            let haveChange = false
 
-        cemconfig.hook?.proxyWeb.map((item) => {
-            if (req.url.startsWith(item.url)) {
-                options.port = item.port
-                options.hostname = item.host
-                haveChange = true
-            }
-        })
-        
+            cemconfig.hook?.proxyWeb.map((item) => {
+                if (req.url.startsWith(item.url)) {
+                    options.port = item.port
+                    options.hostname = item.host
+                    haveChange = true
+                }
+            })
+
             if (!haveChange && req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
                 options.path = "/"
             }
 
-                const proxyReq = http.request(options, proxyRes => {
-                    if (proxyRes.statusCode === 404) {
-                        res.writeHead(404, { 'Content-Type': 'text/html' })
-                        res.end('<h1>A custom 404 page</h1>')
-                        return
-                    }
-                    res.writeHead(proxyRes.statusCode, proxyRes.headers)
-                    proxyRes.pipe(res, { end: true })
-                })
+            const proxyReq = http.request(options, proxyRes => {
+                if (proxyRes.statusCode === 404) {
+                    res.writeHead(404, { 'Content-Type': 'text/html' })
+                    res.end('<h1>A custom 404 page</h1>')
+                    return
+                }
+                res.writeHead(proxyRes.statusCode, proxyRes.headers)
+                proxyRes.pipe(res, { end: true })
+            })
 
-                proxyReq.on('error', function(err) {
-                  console.log('=1e96c7=',err)
-                });
+            proxyReq.on('error', function (err) {
+                console.log('=1e96c7=', err)
+                res.writeHead(500, { 'Content-Type': 'text/html' })
+                res.end('<h1>Internal Error</h1>')
+                return
+            });
 
-                req.pipe(proxyReq, { end: true })
-           
-            
+            req.pipe(proxyReq, { end: true })
+
+
         }).listen(cemconfig.port)
         await ctx.watch()
     }
