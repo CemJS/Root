@@ -18,6 +18,11 @@ declare module "*.jpeg" {
     export default content;
 }
 
+declare module "*.gif" {
+    const content: String;
+    export default content;
+}
+
 declare interface Micro {
     name: String,
     loader: Function,

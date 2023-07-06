@@ -27,6 +27,7 @@ const options = {
         '.jpg': 'file',
         '.jpeg': 'file',
         '.png': 'file',
+        '.gif': 'file',
         '.svg': 'dataurl',
     },
     plugins: [
@@ -47,7 +48,7 @@ const options = {
         {
             name: "assets-images",
             setup(build) {
-                build.onResolve({ filter: /.(jpg|jpeg|png|svg)$/ }, (args) => {
+                build.onResolve({ filter: /.(jpg|jpeg|png|svg|gif)$/ }, (args) => {
                     args.path = args.path.replace("@", "")
                     return { path: path.resolve("assets", args.path) }
                 })
@@ -99,20 +100,16 @@ const start = async function () {
     }
 
     const microFrontends = await checkFrontend(dirFrontends, nameFront);
-    cemconfig.microFrontends = microFrontends
-    fs.writeFileSync('cemconfig.json', JSON.stringify(cemconfig));
+    fs.writeFileSync('microFrontends.json', JSON.stringify(microFrontends));
 
     const ctx = await esbuild.context(options).catch(() => process.exit(1))
     console.log("⚡ Build complete! ⚡")
     if (runServe) {
         const serve = await ctx.serve({ servedir: "public" })
-        // console.log(`\nWeb: http://127.0.0.1:${serve.port}`)
-        console.log(`\nWeb: http://127.0.0.1:3000`)
-        http.createServer((req, res) => {
+        console.log(`\nWeb: http://127.0.0.1:${cemconfig.port}`)
 
-            if (req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
-                req.url = "/"
-            }
+
+        http.createServer((req, res) => {
 
             const options = {
                 hostname: serve.host,
@@ -120,6 +117,20 @@ const start = async function () {
                 path: req.url,
                 method: req.method,
                 headers: req.headers,
+            }
+
+            let haveChange = false
+
+            cemconfig.hook?.proxyWeb.map((item) => {
+                if (req.url.startsWith(item.url)) {
+                    options.port = item.port
+                    options.hostname = item.host
+                    haveChange = true
+                }
+            })
+
+            if (!haveChange && req.url !== "/esbuild" && !req.url.startsWith("/assets/")) {
+                options.path = "/"
             }
 
             const proxyReq = http.request(options, proxyRes => {
@@ -131,7 +142,17 @@ const start = async function () {
                 res.writeHead(proxyRes.statusCode, proxyRes.headers)
                 proxyRes.pipe(res, { end: true })
             })
+
+            proxyReq.on('error', function (err) {
+                console.log('=1e96c7=', err)
+                res.writeHead(500, { 'Content-Type': 'text/html' })
+                res.end('<h1>Internal Error</h1>')
+                return
+            });
+
             req.pipe(proxyReq, { end: true })
+
+
         }).listen(cemconfig.port)
         await ctx.watch()
     }
