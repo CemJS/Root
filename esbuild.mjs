@@ -68,6 +68,7 @@ const checkFrontend = async function (dir, name) {
                 front: true,
                 name: file,
                 path: {},
+                one: name
 
             }
             if (fs.existsSync(path.join(dir, file, "index.ts"))) {
