@@ -26,5 +26,6 @@ declare module "*.gif" {
 declare interface Micro {
     name: String,
     loader: Function,
-    display: Function
+    display: Function,
+    listener: any
 }
