@@ -6,15 +6,19 @@ import postcss from 'postcss';
 import autoprefixer from 'autoprefixer';
 import path from 'path'
 import fs from 'fs'
-
 const proxy = httpProxy.createProxyServer({});
 
-let nameFront
-const runServe = process.argv.includes("--runServe")
-const runFront = process.argv.includes("--runFront")
 const dirFrontends = path.resolve("frontends")
 const dirServices = path.resolve("services")
-let cemconfig = JSON.parse(fs.readFileSync("cemconfig.json"))
+const dirPages = path.resolve("config", "pages")
+const runServe = process.argv.includes("--runServe")
+const runProd = process.argv.includes("--runProd")
+
+
+let cemconfig = JSON.parse(fs.readFileSync("./config/cemjs.json"))
+if (!fs.existsSync("./public/assets")) {
+    fs.mkdirSync("./public/assets");
+}
 
 const options = {
     publicPath: "/assets",
@@ -56,6 +60,15 @@ const options = {
                     return { path: path.resolve("assets", args.path) }
                 })
             }
+        },
+        {
+            name: "assets-json",
+            setup(build) {
+                build.onResolve({ filter: /^@json/ }, (args) => {
+                    args.path = args.path.replace("@", "") + ".json"
+                    return { path: path.resolve(args.path) }
+                })
+            }
         }
     ],
 }
@@ -69,76 +82,86 @@ const checkServices = async function (dir) {
         return {}
     }
 
-    const services = {}
+    const services = []
     fs.readdirSync(dir).map(file => {
         if (file[0] != ".") {
-            services[file] = {
+            let service = {
                 service: true,
                 name: file,
                 path: {}
             }
+            if (fs.existsSync(path.join(dir, file, "cemjs.json"))) {
+                let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemjs.json")))
+                Object.assign(service, cemconfig)
+            }
             if (fs.existsSync(path.join(dir, file, "index.ts"))) {
-                services[file].path.js = `/assets/js/_${file}.js`
+                service.path.js = `/assets/js/_${file}.js?ver=${service.version}`
                 options.entryPoints.push({ in: path.join(dir, file, "index.ts"), out: path.resolve(options.outdir, "js", `_${file}`) })
             }
-            if (fs.existsSync(path.join(dir, file, "cemconfig.json"))) {
-                let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemconfig.json")))
-                Object.assign(services[file], cemconfig)
-            }
-            if (fs.existsSync(path.join(dir, file, "cemconfig.json"))) {
-                let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemconfig.json")))
-                Object.assign(services[file], cemconfig)
-            }
+
+            services.push(service)
         }
     });
     return services
 }
 
-const checkFrontend = async function (dir, name) {
+const checkFrontend = async function (dir) {
     if (!fs.existsSync(dir)) {
         return {}
     }
-    const frontends = {}
+    const frontends = []
     fs.readdirSync(dir).map(file => {
-        if (file[0] != "." && (!name || name == file)) {
-            frontends[file] = {
+        if (file[0] != ".") {
+            let front = {
                 front: true,
                 name: file,
-                path: {},
-                one: name
+                path: {}
+            }
+            if (fs.existsSync(path.join(dir, file, "cemjs.json"))) {
+                let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemjs.json")))
+                Object.assign(front, cemconfig)
             }
             if (fs.existsSync(path.join(dir, file, "index.ts"))) {
-                frontends[file].path.js = `/assets/js/${file}.js`
+                front.path.js = `/assets/js/${file}.js?ver=${front.version}`
                 options.entryPoints.push({ in: path.join(dir, file, "index.ts"), out: path.resolve(options.outdir, "js", file) })
             }
             if (fs.existsSync(path.resolve(`assets/scss/${file}.scss`))) {
-                frontends[file].path.css = `/assets/css/${file}.css`
+                front.path.css = `/assets/css/${file}.css?ver=${front.version}`
                 options.entryPoints.push({ in: path.resolve(`assets/scss/${file}.scss`), out: path.resolve(options.outdir, "css", file) })
             }
-            if (fs.existsSync(path.join(dir, file, "cemconfig.json"))) {
-                let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemconfig.json")))
-                Object.assign(frontends[file], cemconfig)
-            }
+
+            frontends.push(front)
         }
     });
     return frontends
 }
 
-const start = async function () {
-    if (runFront) {
-        if (!process.argv[4] || !fs.existsSync(path.resolve("frontends", process.argv[4]))) {
-            console.error(`Not found microfrontend whith name => ${process.argv[4]}`)
-            return
-        } else {
-            nameFront = process.argv[4]
-        }
+const checkPage = async function (dir) {
+    if (runProd) {
+        cemconfig.live = false
+    } else {
+        cemconfig.live = true
     }
+    let pages = []
+    fs.readdirSync(dir).map(file => {
+        if (file[0] != ".") {
+            let page = JSON.parse(fs.readFileSync(path.join(dir, file)))
+            pages.push(page)
+        }
+    });
+    return pages
+}
 
-    const microFrontends = await checkFrontend(dirFrontends, nameFront);
-    fs.writeFileSync('frontends.json', JSON.stringify(microFrontends));
+const start = async function () {
+    const frontends = await checkFrontend(dirFrontends);
+    fs.writeFileSync('./config/frontends.json', JSON.stringify(frontends));
 
     const services = await checkServices(dirServices);
-    fs.writeFileSync('services.json', JSON.stringify(services));
+    fs.writeFileSync('./config/services.json', JSON.stringify(services));
+
+    const pages = await checkPage(dirPages)
+    fs.writeFileSync('./config/pages.json', JSON.stringify(pages));
+    fs.writeFileSync('./config/cemjs.json', JSON.stringify(cemconfig));
 
     const ctx = await esbuild.context(options).catch(() => process.exit(1))
     console.log("⚡ Build complete! ⚡")
@@ -167,16 +190,16 @@ const start = async function () {
                 }
             })
 
-            if (!haveChange && req.url !== "/esbuild" && !req.url.startsWith("/assets")) {
+            if (!haveChange && req.url !== "/esbuild" && !req.url.startsWith("/assets") && !req.url.startsWith("/contents") && !req.url.startsWith("/favicon.ico")) {
                 req.url = "/"
             }
             proxy.web(req, res, { target: `http://${options.hostname}:${options.port}`, changeOrigin: true });
 
             proxy.on('error', function (err, req, res) {
-                res.writeHead(500, {
-                    'Content-Type': 'text/plain'
-                });
-                res.end('Something went wrong. And we are reporting a custom error message.');
+                // res.writeHead(500, {
+                //     'Content-Type': 'text/plain'
+                // });
+                // res.end('Something went wrong. And we are reporting a custom error message.');
             });
 
         }).listen(cemconfig.port)
