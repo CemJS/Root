@@ -1,10 +1,9 @@
-import { initMap } from 'cemjs-all'
-import cemconfig from './cemconfig.json'
-import frontends from './frontends.json'
-import services from './services.json'
+import { initProject } from 'cemjs-all'
+import cemjs from './config/cemjs.json'
+import pages from './config/pages.json'
+import frontends from './config/frontends.json'
+import services from './config/services.json'
 
-cemconfig.microFrontends = frontends
-cemconfig.services = services
 export default function () {
-    initMap(cemconfig)
+    initProject({ cemjs, pages, frontends, services })
 }

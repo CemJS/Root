@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "cemjs-all": "^1.0.10",
-    "esbuild": "^0.19.1"
+    "esbuild": "^0.19.1",
+    "http-proxy": "^1.18.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
