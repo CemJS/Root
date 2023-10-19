@@ -1,6 +1,5 @@
-node_modules
+
 public/assets
-.env
-frontends.json
-services.json
+node_modules
 package-lock.json
+.env

@@ -4,13 +4,12 @@
         "jsxFactory": "Cemjsx",
         "jsxFragmentFactory": "CemjsxFragment",
         "module": "ES2022",
+        "target": "ES2022",
+        "resolveJsonModule": true,
         "esModuleInterop": true,
         "moduleResolution": "node",
         "baseUrl": ".",
         "paths": {
-            "@src/*": [
-                "./src/*"
-            ],
             "@assets/*": [
                 "./assets/*"
             ],
@@ -19,6 +18,9 @@
             ],
             "@svg/*": [
                 "./assets/svg/*.svg"
+            ],
+            "@json/*": [
+                "./json/*.json"
             ],
         },
     },

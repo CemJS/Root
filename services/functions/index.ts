@@ -1,5 +1,4 @@
 
-
-export const loader = async function (Variable) {
+export const loader = async function (Variable: any) {
   return
 }
