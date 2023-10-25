@@ -5,7 +5,7 @@
   "types": "./index.d.ts",
   "private": true,
   "scripts": {
-    "build": "node esbuild.mjs",
+    "build": "node esbuild.mjs --runProd",
     "start": "node esbuild.mjs --runServe",
     "prod": "node esbuild.mjs --runServe --runProd"
   },
