@@ -11,7 +11,6 @@ front.func.test = () => {
 }
 
 front.loader = () => {
-    Static.tt1 = 1
     return
 }
 
