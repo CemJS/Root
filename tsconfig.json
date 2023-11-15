@@ -22,10 +22,14 @@
             "@json/*": [
                 "./json/*.json"
             ],
+            "@elements/*": [
+                "./elements/*.tsx"
+            ],
         },
     },
     "include": [
         "global.d.ts",
-        "./frontends/**/*"
+        "./frontends/**/*",
+        "./elements/*",
     ]
 }

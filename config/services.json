@@ -1,1 +1,1 @@
-[]
+[{"service":true,"name":"functions","path":{"js":"/assets/js/_functions.js?ver=1.0.0"},"version":"1.0.0","visable":true},{"service":true,"name":"preloader","path":{"js":"/assets/js/_preloader.js?ver=1.0.0"},"version":"1.0.0","visable":true}]

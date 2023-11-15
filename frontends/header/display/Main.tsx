@@ -1,8 +1,9 @@
-import { Cemjsx } from "cemjs-all"
+import { Cemjsx, Func } from "cemjs-all"
 import logo from '@images/logo/logo.jpg'
 
 
 export default function () {
+
   return (
     <header class="header header_container">
       <div class="header_inner">
