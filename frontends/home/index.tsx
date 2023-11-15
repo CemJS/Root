@@ -1,4 +1,4 @@
-import { Cemjsx, front, Listener, Func, Static } from "cemjs-all"
+import { Cemjsx, front, Listener, Func, Static, Variable } from "cemjs-all"
 import Navigation from "./navigation"
 
 
