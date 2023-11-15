@@ -121,9 +121,9 @@ const checkFrontend = async function (dir) {
                 let cemconfig = JSON.parse(fs.readFileSync(path.join(dir, file, "cemjs.json")))
                 Object.assign(front, cemconfig)
             }
-            if (fs.existsSync(path.join(dir, file, "index.ts"))) {
+            if (fs.existsSync(path.join(dir, file, "index.tsx"))) {
                 front.path.js = `/assets/js/${file}.js?ver=${front.version}`
-                options.entryPoints.push({ in: path.join(dir, file, "index.ts"), out: path.resolve(options.outdir, "js", file) })
+                options.entryPoints.push({ in: path.join(dir, file, "index.tsx"), out: path.resolve(options.outdir, "js", file) })
             }
             if (fs.existsSync(path.resolve(`assets/scss/${file}.scss`))) {
                 front.path.css = `/assets/css/${file}.css?ver=${front.version}`

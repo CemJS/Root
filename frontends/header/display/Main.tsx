@@ -1,8 +1,9 @@
-import { Cemjsx } from "cemjs-all"
+import { Cemjsx, Func, Static, Fn } from "cemjs-all"
 import logo from '@images/logo/logo.jpg'
 
 
 export default function () {
+
   return (
     <header class="header header_container">
       <div class="header_inner">
@@ -19,7 +20,7 @@ export default function () {
             <li
               class={["header_menu_item", this.Static.page == "cemjs" ? "header_menu_item-active" : null]}
 
-            ><a href="/about/" onclick={this.Fn.link}>Cem JS</a>
+            ><a href="/about/" onclick={this.Fn.link}>Cem JS{Static.tt1}</a>
             </li>
             <li
               class={["header_menu_item", this.Static.page == "examples" ? "header_menu_item-active" : null]}

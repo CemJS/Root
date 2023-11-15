@@ -11,6 +11,7 @@ export const loader = async function (Variable: any) {
 }
 
 export const progress = async function ({ load, total }) {
+
     let count = Math.round((load / total) * 100)
     if (percent && prog) {
         if (count == 100) {
