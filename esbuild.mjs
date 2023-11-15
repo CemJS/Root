@@ -196,10 +196,11 @@ const start = async function () {
             proxy.web(req, res, { target: `http://${options.hostname}:${options.port}`, changeOrigin: true });
 
             proxy.on('error', function (err, req, res) {
-                res.writeHead(500, {
-                    'Content-Type': 'text/plain'
-                });
-                res.end('Something went wrong. And we are reporting a custom error message.');
+                console.log('=proxy.on=', err)
+                // res.writeHead(500, {
+                //     'Content-Type': 'text/plain'
+                // });
+                // res.end('Something went wrong. And we are reporting a custom error message.');
             });
 
         }).listen(cemconfig.port)
