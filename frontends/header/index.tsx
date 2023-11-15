@@ -3,15 +3,14 @@ import Navigation from "./navigation"
 
 
 Listener.finish = () => {
-    console.log('=b16883=', "finish")
+    return
 }
 
 Func.test = () => {
-    console.log('=9c0331=', "Func.test")
+    return
 }
 
 front.loader = () => {
-    Static.text = "Framework CemJS!";
     return
 }
 
