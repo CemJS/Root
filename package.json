@@ -2,15 +2,14 @@
   "name": "cemjs-root",
   "version": "1.0.0",
   "type": "module",
-  "types": "./index.d.ts",
   "private": true,
   "scripts": {
-    "build": "node esbuild.mjs --runProd",
-    "start": "node esbuild.mjs --runServe",
-    "prod": "node esbuild.mjs --runServe --runProd"
+    "build": "node node_modules/cemjs-all/esbuild.mjs --runProd",
+    "start": "node node_modules/cemjs-all/esbuild.mjs --runServe",
+    "prod": "node node_modules/cemjs-all/esbuild.mjs --runServe --runProd"
   },
   "dependencies": {
-    "cemjs-all": "^1.1.0",
+    "cemjs-all": "^1.1.2",
     "esbuild": "^0.19.1",
     "http-proxy": "^1.18.1"
   },
