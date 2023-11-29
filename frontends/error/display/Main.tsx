@@ -1,7 +1,6 @@
 import { Cemjsx, Fn, Func, Static } from "cemjs-all"
 
 export default function () {
-    Func.test()
     return (
         <div class="error_wrap">
             <p class="error_text">Страница не найдена</p>
