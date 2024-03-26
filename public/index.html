@@ -4,31 +4,58 @@
 <head>
     <title>CemJS FrameWork (Root)</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/assets/css/preloader.css">
-    <link rel="stylesheet" href="/assets/css/root.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CemJS FrameWork (Root)" />
+    <meta name="keywords" content="CemJS FrameWork (Root)" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="CemJS FrameWork (Root)" />
+    <meta property="og:site_name" content="https://cemjs.com/" />
+    <meta property="og:url" content="https://cemjs.com/" />
+    <meta property="og:description" content="CemJS FrameWork (Root)" />
+    <!-- <meta property="og:image" content="/contents/bannerSite.png" /> -->
+    <!-- <meta property="og:image:width" content="968" /> -->
+    <!-- <meta property="og:image:height" content="504" /> -->
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- <meta name="twitter:image" content="/contents/bannerSite.png" /> -->
+    <meta property="twitter:domain" content="cemjs.com" />
+    <meta property="twitter:url" content="https://cemjs.com/" />
+    <meta name="twitter:title" content="CemJS FrameWork (Root)" />
+    <meta name="twitter:description" content="CemJS FrameWork (Root)" />
+    <meta name="author" content="CemJS" />
+    
+    <meta name="robots" content="index,follow" />
+    <meta name="googlebot" content="index,follow" />
+    <meta name="yandex" content="index,follow" />
+    <meta name="robots" content="max-image-preview:large" />
+
     <link type="image/x-icon" href="/favicon.ico" rel="shortcut icon">
     <link type="Image/x-icon" href="/favicon.ico" rel="icon">
+
+    <link rel="stylesheet" href="/assets/css/preloader.css">
+    <link rel="stylesheet" href="/assets/css/root.css">
+    <link rel="stylesheet" href="/assets/css/tailwind.css" />
 </head>
 
-<body>
+<body class="bg-neutral-900 text-[14px] @464:text-[16px]">
     <div id="app"></div>
     <div id="preloader" class="preloader_wrap">
-        <div class="preloader">
-            <div class="preloader_spinner">
-                <div class="preloader_spinner_ring"></div>
-                <div class="preloader_spinner_ring"></div>
-                <div class="preloader_spinner_ring"></div>
-                <div class="preloader_percent" ref="percent">0%</div>
-            </div>
-            <div class="preloader_progressBar">
-                <div id="progress" class="preloader_progress"></div>
-            </div>
+      <div class="preloader">
+        <div class="preloader_spinner">
+          <div class="preloader_spinner_ring"></div>
+          <div class="preloader_spinner_ring"></div>
+          <div class="preloader_spinner_ring"></div>
+          <div class="preloader_percent" ref="percent">0%</div>
         </div>
+        <div class="preloader_progressBar hidden">
+          <div id="progress" class="preloader_progress"></div>
+        </div>
+      </div>
     </div>
-</body>
-<script>
-    import("/assets/js/root.js").then(start => start.default())
-</script>
+  </body>
+  <script>
+    import("/assets/js/root.js").then((start) => start.default());
+  </script>
 
 </html>

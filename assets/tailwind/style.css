@@ -1,0 +1,76 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* prettier-ignore */
+@layer base {
+  :root {
+    --backSecond: #303545;
+    --backModal: #202432;
+    --back700: #1d2029;
+    --textSecond: #909cbf;
+    --textGray: #5b6274;
+    --textGray-light: #cacaca;
+    --border: rgba(150, 150, 150, 0.5);
+    --white: #ffffff;
+    --pink: #ff357f;
+    --noble_black: #1d2029;
+    --black_light: #1d1f28;
+    --gray: #b6b6b6;
+    --light-gray-3: #adb3c9;
+    --gray-active: #40f2d0;
+    --light-gray: #2f3240;
+    --light-gray-2: #32384b;
+    --black-gray: #2b3040;
+    --sky100: #3bade3;
+    --sky500: #576fe6;
+    --purple: #9844b7;
+    --fiolet: #5f479b;
+    --orangeH: #f57707;
+    --fioletDark: #3b2d4a;
+    --border-colorH: #2d3243;
+    --border-color: #434954;
+    --success-color: rgb(37, 249, 48);
+    --polar_mist: #aeafbf;
+    --cold_heights: #20e0f6;
+    --kingly_cloud: #dfdfdf;
+    --black_flame: #474c5a;
+    --prestige_blue: #313643;
+    --ancestral_water: #d0d0d0;
+    --carbon_blue: #363c50;
+    --atlantic_charter: #2b3040;
+    --summer_sky: #3bade3;
+    --blue_oyster_cult: #576fe6;
+    --textBlue: #6e44d7;
+    --akebi_purple: #9844b7;
+    --lilac_lotion: #ff357f;
+    --green: #02c6a9;
+    --green_light: #01c8ab;
+    --green-light: #01c8ab;
+    --opacity_gray: rgba(255, 255, 255, 0.1);
+    --opacity-gray: rgba(255, 255, 255, 0.1);
+
+
+    /* // numerical */
+    --btnR: 0.4px;
+    --borderR: 1rem;
+    --ellipse: 50%;
+
+    /* // padding */
+    --p: 1.25rem;
+
+    /* // transition */
+    --tran-03: all 0.3s ease-in-out;
+    --tran-05: all 0.5s ease-in-out;
+
+    /* // gradient */
+    --mainGradient: linear-gradient(to_left,#2973ff,#8846d3,#ff22ac);
+    --grayGradient: linear-gradient(149.17deg,#282d3c_0.97%,rgba(40,45,60,0)_86.74%);
+    --blueGradient: linear-gradient(89.03deg,#679fef_0.54%,#a87fff_97.66%);
+    --lightBlueGradient: radial-gradient(41.76%_41.76%_at_50%_50%,#915dff_0%,rgba(191,9,255,0)_100%);
+    --darkBlueGradient: linear-gradient(90deg,#2f66b9_2.08%,#8a5be5_97.67%);
+    --greenGradient: linear-gradient(90deg,#01c8ab 0%,#02c3a7 13%,#04b49a 28%,#079b85 45%,#0b7969 62%,#104c43 81%,#171717 100%);
+  }
+}
+
+
