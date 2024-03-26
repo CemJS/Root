@@ -4,20 +4,21 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "build": "node node_modules/cemjs-all/esbuild.mjs --runProd",
-    "start": "node node_modules/cemjs-all/esbuild.mjs --runServe",
-    "prod": "node node_modules/cemjs-all/esbuild.mjs --runServe --runProd"
+    "build:esbuild": "node node_modules/cemjs-all/esbuild.mjs --runProd",
+    "build:css": "npx tailwindcss -i ./assets/tailwind/style.css -o ./public/assets/css/tailwind.css --minify",
+    "build": "npm-run-all --parallel build:*",
+    "start": "npm-run-all --parallel watch:*",
+    "watch:esbuild": "node node_modules/cemjs-all/esbuild.mjs --runServe",
+    "watch:css": "npx tailwindcss -i ./assets/tailwind/style.css -o ./public/assets/css/tailwind.css --watch"
   },
   "dependencies": {
-    "cemjs-all": "^1.1.2",
-    "esbuild": "^0.19.1",
-    "http-proxy": "^1.18.1"
+    "cemjs-all": "^1.1.17"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.14",
-    "esbuild-sass-plugin": "^2.12.0",
-    "path": "^0.12.7",
-    "postcss": "^8.4.24"
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.2.5",
+    "prettier-plugin-tailwindcss": "^0.5.11",
+    "tailwindcss": "^3.4.1"
   },
   "main": "index.js",
   "author": "crypto-emergency.com",
