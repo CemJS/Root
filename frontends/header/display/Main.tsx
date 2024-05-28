@@ -1,39 +1,57 @@
 import { Cemjsx, Func, Static, Fn } from "cemjs-all"
 import logo from '@images/logo/logo.jpg'
 
+type Link = {
+  url: string;
+  pageCheck: string;
+  title: string;
+  onclick?: () => void;
+}
+function Link ({ url, title, onclick, pageCheck }: Link) {
+  const baseStyle = `text-base font-medium cursor-pointer relative
+  before:content-[''] before:absolute before:bg-white before:h-0.5 before:w-full before:-bottom-1`
+  const style = `${baseStyle} before:scale-x-0 hover:before:scale-x-100`;
+  const styleActive = `${baseStyle} before:scale-x-100`
+
+  return (
+    <li class={[style, Static.page == pageCheck ? styleActive : null]}>
+        <a href={ url } onclick={ onclick ?? Fn.link }>{ title }</a>
+    </li>
+  )
+}
+
 
 export default function () {
   return (
-    <header class="header header_container">
-      <div class="header_inner">
-        <div class="header_logo">
-          <a href="/" onclick={Fn.link}>
-            <img
-              class="header_logo-img"
-              src={logo}
-            ></img>
-          </a>
-        </div>
-        <nav>
-          <ul class="header_menu">
-            <li
-              class={["header_menu_item", Static.page == "cemjs" ? "header_menu_item-active" : null]}
+    <div class="relative">
+      <div class="absolute -z-10 left-0 right-0 top-0 bottom-0 blur-[2px] shadow-[inset_0_0_0_3000px_rgba(150,150,159,0.192)]" />
+      <header class="container mx-auto">
+        <div class="realative flex justify-between items-center h-20">
 
-            ><a href="/about/" onclick={Fn.link}>Cem JS</a>
-            </li>
-            <li
-              class={["header_menu_item", Static.page == "examples" ? "header_menu_item-active" : null]}
-            ><a href="https://ya.ru" onclick={Fn.link}>Examples</a></li>
-            <li
-              class={["header_menu_item", Static.page == "contacts" ? "header_menu_item-active" : null]}
-              onclick={() => {
-                Static.page = "contacts"
-                Fn.init()
-              }}
-            >Contacts</li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+          <div class="size-16 cursor-pointer">
+            <a href="/" onclick={Fn.link}>
+              <img
+                class="rounded-full"
+                src={logo}
+              ></img>
+            </a>
+          </div>
+
+          <nav>
+
+            <ul class="flex list-none pl-0 gap-5">
+              <Link url="/about/" title="Cem JS" pageCheck="cemjs" />
+              <Link url="https://ya.ru/" title="Examples" pageCheck="examples" />
+              <Link url="/contacts/" title="Contacts" pageCheck="contacts" onclick={ () => {
+                Static.page = "contacts";
+                Fn.init();
+              }} />
+            </ul>
+
+          </nav>
+        </div>
+
+      </header>
+    </div>
   )
 }
